@@ -87,11 +87,15 @@ if (contactForm) {
             return;
         }
         
-        // Prepare email data
-        const emailData = {
-            to: 'service@ecnet.co.il',
-            subject: `הודעה חדשה מ-${name}`,
-            body: `
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'שולח...';
+        submitBtn.disabled = true;
+        
+        // Prepare email content
+        const emailSubject = `הודעה חדשה מ-${name}`;
+        const emailBody = `
 שם: ${name}
 אימייל: ${email}
 טלפון: ${phone || 'לא צוין'}
@@ -101,19 +105,12 @@ ${message}
 
 ---
 נשלח מהאתר: www.ecnet.co.il
-            `
-        };
+        `;
         
-        // Simulate form submission
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'שולח...';
-        submitBtn.disabled = true;
+        // Create mailto link with pre-filled content
+        const mailtoLink = `mailto:service@ecnet.co.il?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
         
-        // Send email using mailto link (fallback method)
-        const mailtoLink = `mailto:${emailData.to}?subject=${encodeURIComponent(emailData.subject)}&body=${encodeURIComponent(emailData.body)}`;
-        
-        // Try to open email client
+        // Open email client with pre-filled content
         try {
             window.location.href = mailtoLink;
             alert('תודה! ההודעה נשלחה בהצלחה. נחזור אליך בהקדם.');
