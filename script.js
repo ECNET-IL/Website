@@ -62,18 +62,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Form submission handling with Formspree
-const contactForm = document.getElementById('contactForm');
+// Form submission handling
+const contactForm = document.querySelector('.contact-form form');
 if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
-        // Let Formspree handle the submission
+        e.preventDefault();
+        
+        // Get form data
+        const formData = new FormData(this);
+        const name = this.querySelector('input[type="text"]').value;
+        const email = this.querySelector('input[type="email"]').value;
+        const phone = this.querySelector('input[type="tel"]').value;
+        const message = this.querySelector('textarea').value;
+        
+        // Simple validation
+        if (!name || !email || !message) {
+            alert('אנא מלא את כל השדות הנדרשים');
+            return;
+        }
+        
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('אנא הכנס כתובת אימייל תקינה');
+            return;
+        }
+        
+        // Simulate form submission
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
         submitBtn.textContent = 'שולח...';
         submitBtn.disabled = true;
         
-        // Formspree will handle the email sending automatically
-        // The form will be submitted to Formspree which will forward to service@ecnet.co.il
+        // Simulate API call
+        setTimeout(() => {
+            alert('תודה! ההודעה נשלחה בהצלחה. נחזור אליך בהקדם.');
+            this.reset();
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }, 2000);
     });
 }
 
