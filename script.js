@@ -62,66 +62,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Form submission handling
+// Form submission handling with Formspree
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Get form data
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const phone = document.getElementById('phone').value;
-        const message = document.getElementById('message').value;
-        
-        // Simple validation
-        if (!name || !email || !message) {
-            alert('אנא מלא את כל השדות הנדרשים');
-            return;
-        }
-        
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            alert('אנא הכנס כתובת אימייל תקינה');
-            return;
-        }
-        
-        // Show loading state
+        // Let Formspree handle the submission
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
         submitBtn.textContent = 'שולח...';
         submitBtn.disabled = true;
         
-        // Prepare email content
-        const emailSubject = `הודעה חדשה מ-${name}`;
-        const emailBody = `
-שם: ${name}
-אימייל: ${email}
-טלפון: ${phone || 'לא צוין'}
-
-תוכן ההודעה:
-${message}
-
----
-נשלח מהאתר: www.ecnet.co.il
-        `;
-        
-        // Create mailto link with pre-filled content
-        const mailtoLink = `mailto:service@ecnet.co.il?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-        
-        // Open email client with pre-filled content
-        try {
-            window.location.href = mailtoLink;
-            alert('תודה! ההודעה נשלחה בהצלחה. נחזור אליך בהקדם.');
-            this.reset();
-        } catch (error) {
-            alert('תודה! ההודעה נשלחה בהצלחה. נחזור אליך בהקדם.');
-            this.reset();
-        }
-        
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
+        // Formspree will handle the email sending automatically
+        // The form will be submitted to Formspree which will forward to service@ecnet.co.il
     });
 }
 
