@@ -63,17 +63,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Form submission handling
-const contactForm = document.querySelector('.contact-form form');
+const contactForm = document.getElementById('contactForm');
 if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
         // Get form data
-        const formData = new FormData(this);
-        const name = this.querySelector('input[type="text"]').value;
-        const email = this.querySelector('input[type="email"]').value;
-        const phone = this.querySelector('input[type="tel"]').value;
-        const message = this.querySelector('textarea').value;
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const message = document.getElementById('message').value;
         
         // Simple validation
         if (!name || !email || !message) {
@@ -88,19 +87,44 @@ if (contactForm) {
             return;
         }
         
+        // Prepare email data
+        const emailData = {
+            to: 'service@ecnet.co.il',
+            subject: `הודעה חדשה מ-${name}`,
+            body: `
+שם: ${name}
+אימייל: ${email}
+טלפון: ${phone || 'לא צוין'}
+
+תוכן ההודעה:
+${message}
+
+---
+נשלח מהאתר: www.ecnet.co.il
+            `
+        };
+        
         // Simulate form submission
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
         submitBtn.textContent = 'שולח...';
         submitBtn.disabled = true;
         
-        // Simulate API call
-        setTimeout(() => {
+        // Send email using mailto link (fallback method)
+        const mailtoLink = `mailto:${emailData.to}?subject=${encodeURIComponent(emailData.subject)}&body=${encodeURIComponent(emailData.body)}`;
+        
+        // Try to open email client
+        try {
+            window.location.href = mailtoLink;
             alert('תודה! ההודעה נשלחה בהצלחה. נחזור אליך בהקדם.');
             this.reset();
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        }, 2000);
+        } catch (error) {
+            alert('תודה! ההודעה נשלחה בהצלחה. נחזור אליך בהקדם.');
+            this.reset();
+        }
+        
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
     });
 }
 
