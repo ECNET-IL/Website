@@ -62,146 +62,93 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Form submission handling
-const contactForm = document.querySelector('.contact-form form');
-if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+// Calculate exact node centers and update SVG lines
+function updateNetworkConnections() {
+    const nodes = document.querySelectorAll('.network-node');
+    const svg = document.querySelector('.network-svg');
+    
+    if (!nodes.length || !svg) {
+        console.log('Nodes or SVG not found');
+        return;
+    }
+    
+    console.log('Found', nodes.length, 'nodes and SVG');
+    
+    // Clear existing lines
+    svg.innerHTML = '';
+    
+    // Calculate centers for each node
+    const nodeCenters = [];
+    nodes.forEach((node, index) => {
+        const rect = node.getBoundingClientRect();
+        const svgRect = svg.getBoundingClientRect();
         
-        // Get form data
-        const formData = new FormData(this);
-        const name = this.querySelector('input[type="text"]').value;
-        const email = this.querySelector('input[type="email"]').value;
-        const phone = this.querySelector('input[type="tel"]').value;
-        const message = this.querySelector('textarea').value;
+        // Calculate center relative to SVG
+        const centerX = ((rect.left + rect.width/2) - svgRect.left) / svgRect.width * 100;
+        const centerY = ((rect.top + rect.height/2) - svgRect.top) / svgRect.height * 100;
         
-        // Simple validation
-        if (!name || !email || !message) {
-            alert('אנא מלא את כל השדות הנדרשים');
-            return;
-        }
-        
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            alert('אנא הכנס כתובת אימייל תקינה');
-            return;
-        }
-        
-        // Simulate form submission
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'שולח...';
-        submitBtn.disabled = true;
-        
-        // Simulate API call
-        setTimeout(() => {
-            alert('תודה! ההודעה נשלחה בהצלחה. נחזור אליך בהקדם.');
-            this.reset();
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        }, 2000);
+        nodeCenters.push({ x: centerX, y: centerY, index: index + 1 });
+        console.log(`Node ${index + 1}: center at (${centerX.toFixed(2)}%, ${centerY.toFixed(2)}%)`);
     });
+    
+    // Define connections (which nodes connect to which)
+    const connections = [
+        // Node 1 connections
+        { from: 1, to: 9 }, { from: 1, to: 12 }, { from: 1, to: 10 },
+        // Node 2 connections
+        { from: 2, to: 4 }, { from: 2, to: 9 }, { from: 2, to: 10 },
+        // Node 3 connections
+        { from: 3, to: 1 }, { from: 3, to: 12 }, { from: 3, to: 5 },
+        // Node 5 connections
+        { from: 5, to: 1 }, { from: 5, to: 12 }, { from: 5, to: 7 },
+        // Node 7 connections
+        { from: 7, to: 10 }, { from: 7, to: 11 }, { from: 7, to: 12 },
+        // Node 9 connections
+        { from: 9, to: 12 }, { from: 9, to: 10 },
+        // Node 8 connections
+        { from: 8, to: 4 }, { from: 8, to: 6 }, { from: 8, to: 10 }, { from: 8, to: 11 },
+        // Node 6 connections
+        { from: 6, to: 4 }, { from: 6, to: 10 },
+        // Node 4 connections
+        { from: 4, to: 10 },
+        // Node 10 connections
+        { from: 10, to: 5 },
+        // Node 11 connections
+        { from: 11, to: 12 }, { from: 11, to: 4 }, { from: 11, to: 10 },
+    ];
+    
+    // Create SVG lines
+    connections.forEach((conn, index) => {
+        const fromNode = nodeCenters.find(n => n.index === conn.from);
+        const toNode = nodeCenters.find(n => n.index === conn.to);
+        
+        if (fromNode && toNode) {
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute('x1', fromNode.x + '%');
+            line.setAttribute('y1', fromNode.y + '%');
+            line.setAttribute('x2', toNode.x + '%');
+            line.setAttribute('y2', toNode.y + '%');
+            line.setAttribute('stroke', '#00d4aa');
+            line.setAttribute('stroke-width', '1.5');
+            line.setAttribute('opacity', '0.3');
+            // Choose different animation for each line
+            const animations = ['fadeInOut', 'fadeInOut2', 'fadeInOut3'];
+            const animationName = animations[index % animations.length];
+            line.style.animationDelay = (index * 0.4) + 's';
+            line.style.animation = animationName + ' 8s ease-in-out infinite';
+            line.style.filter = 'drop-shadow(0 0 2px rgba(0, 212, 170, 0.2))';
+            
+            svg.appendChild(line);
+            console.log(`Created line from node ${conn.from} to node ${conn.to}`);
+        }
+    });
+    
+    console.log('Created', connections.length, 'lines');
 }
 
-// Counter animation for stats
-function animateCounter(element, target, duration = 2000) {
-    let start = 0;
-    const increment = target / (duration / 16);
-    
-    const timer = setInterval(() => {
-        start += increment;
-        if (start >= target) {
-            element.textContent = target + (element.textContent.includes('+') ? '+' : '');
-            clearInterval(timer);
-        } else {
-            element.textContent = Math.floor(start) + (element.textContent.includes('+') ? '+' : '');
-        }
-    }, 16);
-}
-
-// Animate counters when they come into view
-const statNumbers = document.querySelectorAll('.stat-number');
-const statObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const target = parseInt(entry.target.textContent);
-            animateCounter(entry.target, target);
-            statObserver.unobserve(entry.target);
-        }
-    });
-}, { threshold: 0.5 });
-
-statNumbers.forEach(stat => {
-    statObserver.observe(stat);
-});
-
-// Parallax effect for hero section
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const hero = document.querySelector('.hero');
-    if (hero) {
-        const rate = scrolled * -0.5;
-        hero.style.transform = `translateY(${rate}px)`;
-    }
-});
-
-// Add loading animation
-window.addEventListener('load', () => {
-    document.body.classList.add('loaded');
-});
-
-// Add CSS for loading animation and mobile menu
-const style = document.createElement('style');
-style.textContent = `
-    body {
-        opacity: 0;
-        transition: opacity 0.5s ease;
-    }
-    
-    body.loaded {
-        opacity: 1;
-    }
-    
-    .hamburger.active span:nth-child(1) {
-        transform: rotate(-45deg) translate(-5px, 6px);
-    }
-    
-    .hamburger.active span:nth-child(2) {
-        opacity: 0;
-    }
-    
-    .hamburger.active span:nth-child(3) {
-        transform: rotate(45deg) translate(-5px, -6px);
-    }
-    
-    @media (max-width: 768px) {
-        .nav-menu {
-            position: fixed;
-            left: -100%;
-            top: 70px;
-            flex-direction: column;
-            background-color: white;
-            width: 100%;
-            text-align: center;
-            transition: 0.3s;
-            box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
-            padding: 2rem 0;
-        }
-        
-        .nav-menu.active {
-            left: 0;
-        }
-        
-        .nav-menu li {
-            margin: 1rem 0;
-        }
-        
-        .nav-menu li:hover a {
-            color: var(--primary-green);
-            transform: translateX(-5px);
-            transition: all 0.3s ease;
-        }
-    }
-`;
-document.head.appendChild(style); 
+// Update connections when page loads and on resize
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, updating network connections...');
+    setTimeout(updateNetworkConnections, 500);
+    window.addEventListener('resize', updateNetworkConnections);
+}); 
