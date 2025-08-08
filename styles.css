@@ -1305,12 +1305,12 @@ body {
     .hero-container {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 2rem;
+        gap: 1.25rem;
     }
     .hero {
         min-height: auto;
         /* Extra top padding to clear fixed navbar + mobile safe area */
-        padding: calc(9.5rem + env(safe-area-inset-top)) 0 4rem;
+        padding: calc(9.5rem + env(safe-area-inset-top)) 0 2.5rem;
     }
     /* Hide small tagline under logo on phones to avoid crowding */
     .nav-logo span { display: none; }
@@ -1321,6 +1321,9 @@ body {
         justify-content: center;
         flex-wrap: wrap;
     }
+
+    /* Remove empty hero visual column on mobile */
+    .hero-visual { display: none; height: 0; }
 
     /* Show network on mobile with lighter styling */
     .nodes-bg {
