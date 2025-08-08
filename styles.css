@@ -1328,7 +1328,7 @@ body {
     /* Show network on mobile with lighter styling */
     .nodes-bg {
         display: block;
-        transform: translateY(2.5vh) scale(1.07);
+        transform: translateY(6vh) scale(1.07);
         transform-origin: 50% 45%;
         will-change: transform;
     }
@@ -1339,7 +1339,7 @@ body {
         content: '';
         position: absolute;
         left: 50%;
-        top: 54%;
+        top: 57%;
         transform: translate(-50%, -50%);
         width: 68vw;
         height: 68vw;
