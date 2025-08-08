@@ -1323,7 +1323,12 @@ body {
     }
 
     /* Show network on mobile with lighter styling */
-    .nodes-bg { display: block; }
+    .nodes-bg {
+        display: block;
+        transform: scale(1.07);
+        transform-origin: 50% 45%;
+        will-change: transform;
+    }
     .hero-container::before { opacity: 0; }
 
     /* Keep dots above lines but below text on phones */
