@@ -1343,7 +1343,7 @@ body {
         background: rgba(255, 255, 255, 0.7);
         border-radius: 50%;
         filter: blur(18px);
-        z-index: 2; /* above lines and nodes (1/2), below text (3) */
+        z-index: -1; /* below the hero title text, still inside its stacking context */
         pointer-events: none;
     }
 
