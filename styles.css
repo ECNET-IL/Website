@@ -1307,7 +1307,11 @@ body {
         text-align: center;
         gap: 2rem;
     }
-    .hero { min-height: auto; padding: 6rem 0 4rem; }
+    .hero {
+        min-height: auto;
+        /* Extra top padding to clear fixed navbar + mobile safe area */
+        padding: calc(7.5rem + env(safe-area-inset-top)) 0 4rem;
+    }
     
     .hero-title { font-size: 2.2rem; }
     
@@ -1354,6 +1358,7 @@ body {
         padding: 0 15px;
     }
     
+    .hero { padding: calc(8.5rem + env(safe-area-inset-top)) 0 3.5rem; }
     .hero-title { font-size: 1.8rem; }
     .hero-description { font-size: 1rem; }
     .btn { padding: 0.7rem 1rem; }
