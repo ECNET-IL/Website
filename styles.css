@@ -1331,6 +1331,22 @@ body {
     }
     .hero-container::before { opacity: 0; }
 
+    /* Mobile blur circle behind the hero title */
+    .hero-title::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 68vw;
+        height: 68vw;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 50%;
+        filter: blur(18px);
+        z-index: 2; /* above lines and nodes (1/2), below text (3) */
+        pointer-events: none;
+    }
+
     /* Keep dots above lines but below text on phones */
     .network-node {
         z-index: 2;
