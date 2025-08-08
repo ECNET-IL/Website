@@ -146,9 +146,37 @@ function updateNetworkConnections() {
     console.log('Created', connections.length, 'lines');
 }
 
-// Update connections when page loads and on resize
+// Update connections when layout is ready and on resize (debounced)
+function onLayoutReady(callback) {
+    // Wait for fonts (affecting layout) and next frame to ensure precise positions
+    const proceed = () => requestAnimationFrame(() => requestAnimationFrame(callback));
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(proceed).catch(proceed);
+    } else {
+        if (document.readyState === 'complete') {
+            proceed();
+        } else {
+            window.addEventListener('load', proceed, { once: true });
+        }
+    }
+}
+
+function debounce(fn, wait) {
+    let timeoutId = null;
+    return function(...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn.apply(this, args), wait);
+    };
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, updating network connections...');
-    setTimeout(updateNetworkConnections, 500);
-    window.addEventListener('resize', updateNetworkConnections);
-}); 
+    const svg = document.querySelector('.network-svg');
+    if (svg) svg.style.visibility = 'hidden';
+    onLayoutReady(() => {
+        updateNetworkConnections();
+        if (svg) svg.style.visibility = 'visible';
+    });
+    window.addEventListener('resize', debounce(() => {
+        updateNetworkConnections();
+    }, 150));
+});
